@@ -229,7 +229,9 @@ server {
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_cache_bypass $http_upgrade;
         
-        # Timeouts for streaming
+        # Streaming optimizations
+        proxy_buffering off;
+        proxy_request_buffering off;
         proxy_read_timeout 300;
         proxy_connect_timeout 300;
         proxy_send_timeout 300;
@@ -297,7 +299,7 @@ User=spectra
 Group=spectra
 WorkingDirectory=/home/spectra/spectramovie
 Environment="PATH=/home/spectra/spectramovie/venv/bin"
-ExecStart=/home/spectra/spectramovie/venv/bin/gunicorn --workers 4 --bind 127.0.0.1:5000 --timeout 120 app:app
+ExecStart=/home/spectra/spectramovie/venv/bin/gunicorn --worker-class gevent --workers 4 --bind 127.0.0.1:5000 --timeout 120 app:app
 Restart=always
 RestartSec=10
 
