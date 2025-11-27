@@ -12,7 +12,6 @@ interface HeroCarouselProps {
 
 export const HeroCarousel: React.FC<HeroCarouselProps> = ({ items }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [direction, setDirection] = useState(0);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -22,12 +21,10 @@ export const HeroCarousel: React.FC<HeroCarouselProps> = ({ items }) => {
   }, [currentIndex]);
 
   const handlePrev = () => {
-    setDirection(-1);
     setCurrentIndex(prev => (prev - 1 + items.length) % items.length);
   };
 
   const handleNext = () => {
-    setDirection(1);
     setCurrentIndex(prev => (prev + 1) % items.length);
   };
 

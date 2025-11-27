@@ -179,7 +179,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ type, filters, onFilterCha
                 </select>
               </div>
 
-              {type !== 'animation' && (
+              {(type === 'movie' || type === 'tv') && (
                 <div className="filter-group rating-group">
                   <span className="filter-label">Min Rating: <strong>{filters.rating}</strong></span>
                   <input
@@ -309,7 +309,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({ type, filters, onFilterCha
                   </select>
                 </div>
 
-                {type !== 'animation' && (
+                {(type === 'movie' || type === 'tv') && (
                   <div className="filter-group rating-group">
                     <span className="filter-label">Min Rating: <strong>{filters.rating}</strong></span>
                     <input

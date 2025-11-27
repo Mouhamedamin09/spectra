@@ -12,7 +12,7 @@ export const Header: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const searchInputRef = React.useRef<HTMLInputElement>(null);
-  const debounceTimeout = React.useRef<NodeJS.Timeout>();
+  const debounceTimeout = React.useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
