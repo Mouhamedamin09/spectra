@@ -200,17 +200,20 @@ def stream(slug, subject_id):
                     'available_qualities': [s['quality'] for s in quality_streams]
                 })
             else:
+                print(f"[-] No streams found in data: {json.dumps(data)}")
                 return jsonify({'error': 'No streams available'}), 404
         else:
             error_msg = data.get('message', 'No resource available')
-            print(f"[-] Stream error: {error_msg}")
-            return jsonify({'error': error_msg}), 404
+            print(f"[-] Stream API Error: {error_msg}")
+            print(f"[-] Full Response: {json.dumps(data)}")
+            return jsonify({'error': error_msg, 'details': data}), 404
             
     except Exception as e:
-        print(f"[-] Stream error: {e}")
+        print(f"[-] Stream Exception: {e}")
         import traceback
         traceback.print_exc()
-        return jsonify({'error': str(e)}), 500
+        # Return the actual error to the client for debugging
+        return jsonify({'error': str(e), 'trace': traceback.format_exc()}), 500
 
 
 @app.route('/api/captions/<slug>/<subject_id>/<stream_id>')

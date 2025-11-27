@@ -105,7 +105,7 @@ usermod -aG sudo spectra
 su - spectra
 ```
 
-### Step 3: Clone and Setup Application
+### Step 3: Clone acdnd Setup Application
 
 ```bash
 # Clone your repository (or upload files via SCP)
@@ -297,9 +297,9 @@ After=network.target
 Type=notify
 User=spectra
 Group=spectra
-WorkingDirectory=/home/spectra/spectramovie
-Environment="PATH=/home/spectra/spectramovie/venv/bin"
-ExecStart=/home/spectra/spectramovie/venv/bin/gunicorn --worker-class gevent --workers 4 --bind 127.0.0.1:5000 --timeout 120 app:app
+WorkingDirectory=/home/spectra/spectra
+Environment="PATH=/home/spectra/spectra/venv/bin"
+ExecStart=/home/spectra/spectra/venv/bin/gunicorn --worker-class gevent --workers 4 --bind 127.0.0.1:5000 --timeout 120 app:app
 Restart=always
 RestartSec=10
 
