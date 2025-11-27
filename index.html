@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MovieStream - Watch Movies Free</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Popunder Ad -->
+    <script type='text/javascript' src='//pl28143153.effectivegatecpm.com/bb/26/1c/bb261cd0f7c70fa55e0c02536254ee9b.js'></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="logo" onclick="showSearchPage()">🎬 MovieStream</h1>
+            <p class="tagline">Stream unlimited movies, completely free</p>
+            <div class="nav-buttons">
+                <button class="nav-btn" onclick="showSearchPage()">Home</button>
+                <button class="nav-btn" onclick="showMoviesBrowser()">Movies</button>
+                <button class="nav-btn" onclick="showTVShowsBrowser()">TV Shows</button>
+                <button class="nav-btn" onclick="showAnimationBrowser()">Animation</button>
+            </div>
+        </header>
+
+        <!-- Search Section -->
+        <section id="searchPage" class="page-section">
+            <div class="search-section">
+                <div class="search-container">
+                    <input 
+                        type="text" 
+                        id="searchInput" 
+                        class="search-input" 
+                        placeholder="Search for movies..."
+                        autocomplete="off"
+                    >
+                    <button id="searchBtn" class="search-btn">
+                        <span>Search</span>
+                    </button>
+                    <div id="searchSuggestions" class="search-suggestions hidden"></div>
+                </div>
+                <div id="searchStatus" class="search-status"></div>
+            </div>
+
+            <!-- Home Sections (Trending, etc) -->
+            <div id="homeSections" class="home-sections"></div>
+
+            <!-- Movie Results Grid -->
+            <div class="results-section">
+                <div id="resultsContainer" class="results-grid"></div>
+            </div>
+        </section>
+
+        <!-- Movie Details Page -->
+        <section id="detailsPage" class="page-section hidden">
+            <button class="back-btn" onclick="showSearchPage()">← Back to Search</button>
+            
+            <!-- Background still image -->
+            <div id="detailsBackdrop" class="details-backdrop"></div>
+            
+            <div class="details-page-content">
+                <div class="details-poster-column">
+                    <img id="detailsPoster" class="details-poster-large" src="" alt="">
+                </div>
+                
+                <div class="details-info-column">
+                    <h1 id="detailsTitle" class="details-page-title"></h1>
+                    
+                    <div class="details-meta-row">
+                        <span id="detailsYear" class="meta-badge"></span>
+                        <span id="detailsRating" class="meta-badge rating"></span>
+                        <span id="detailsRatingCount" class="meta-badge"></span>
+                        <span id="detailsDuration" class="meta-badge"></span>
+                    </div>
+                    
+                    <div class="details-genre-row">
+                        <span class="label">Genre:</span>
+                        <span id="detailsGenre"></span>
+                    </div>
+                    
+                    <div class="details-country-row">
+                        <span class="label">Country:</span>
+                        <span id="detailsCountry"></span>
+                    </div>
+                    
+                    <div class="details-description-box">
+                        <h3>Overview</h3>
+                        <p id="detailsDescription"></p>
+                        <p id="detailsPostTitle" class="post-title"></p>
+                    </div>
+                    
+                    <!-- TV Show Season/Episode Selector -->
+                    <div id="tvShowControls" class="tv-show-controls hidden">
+                        <div class="season-selector-group">
+                            <label for="seasonSelect">Season:</label>
+                            <select id="seasonSelect" class="season-dropdown"></select>
+                        </div>
+                        
+                        <div class="episodes-grid" id="episodesGrid"></div>
+                    </div>
+                    
+                    <!-- Cast Section -->
+                    <div id="castSection" class="cast-section hidden">
+                        <h3>Cast</h3>
+                        <div id="castGrid" class="cast-grid"></div>
+                    </div>
+                    
+                    <button id="playBtn" class="play-btn-large" onclick="showPlayer()">
+                        <span class="play-icon-large">▶</span>
+                        <span id="playBtnText">Play Movie</span>
+                    </button>
+                    
+                    <div id="detailsLoadingIndicator" class="loading-indicator hidden">
+                        <div class="spinner-small"></div>
+                        <span>Loading movie information...</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recommended Movies Section -->
+            <div class="recommended-section">
+                <h2 class="recommended-title">More Like This</h2>
+                <div id="recommendedGrid" class="recommended-grid">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TV Shows Browser Section -->
+        <section id="tvShowsPage" class="page-section hidden">
+            <button class="back-btn" onclick="showSearchPage()">← Back to Home</button>
+            
+            <div class="tv-shows-browser">
+                <h2 class="tv-shows-title">Browse TV Shows</h2>
+                
+                <div class="filter-controls">
+                    <div class="filter-group">
+                        <label>Sort by:</label>
+                        <div class="button-group">
+                            <button class="filter-btn" data-sort="ForYou">ForYou</button>
+                            <button class="filter-btn" data-sort="Hottest">Hottest</button>
+                            <button class="filter-btn active" data-sort="Latest">Latest</button>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Genre:</label>
+                        <select id="genreFilter" class="filter-dropdown">
+                            <option value="">All Genres</option>
+                            <option value="Action">Action</option>
+                            <option value="Adventure">Adventure</option>
+                            <option value="Anime">Anime</option>
+                            <option value="Comedy">Comedy</option>
+                            <option value="Crime">Crime</option>
+                            <option value="Drama">Drama</option>
+                            <option value="Fantasy">Fantasy</option>
+                            <option value="History">History</option>
+                            <option value="Horror">Horror</option>
+                            <option value="Mystery">Mystery</option>
+                            <option value="Romance">Romance</option>
+                            <option value="Sci-Fi">Sci-Fi</option>
+                            <option value="Thriller">Thriller</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Year:</label>
+                        <select id="yearFilter" class="filter-dropdown">
+                            <option value="">All Years</option>
+                            <option value="2025">2025</option>
+                            <option value="2024">2024</option>
+                            <option value="2023">2023</option>
+                            <option value="2022">2022</option>
+                            <option value="2021">2021</option>
+                            <option value="2020">2020</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Country:</label>
+                        <select id="countryFilter" class="filter-dropdown">
+                            <option value="">All</option>
+                            <option value="United States">United States</option>
+                            <option value="United Kingdom">United Kingdom</option>
+                            <option value="Korea">Korea</option>
+                            <option value="Japan">Japan</option>
+                            <option value="Bangladesh">Bangladesh</option>
+                            <option value="China">China</option>
+                            <option value="Egypt">Egypt</option>
+                            <option value="France">France</option>
+                            <option value="Germany">Germany</option>
+                            <option value="India">India</option>
+                            <option value="Indonesia">Indonesia</option>
+                            <option value="Iraq">Iraq</option>
+                            <option value="Italy">Italy</option>
+                            <option value="Ivory Coast">Ivory Coast</option>
+                            <option value="Kenya">Kenya</option>
+                            <option value="Lebanon">Lebanon</option>
+                            <option value="Mexico">Mexico</option>
+                            <option value="Morocco">Morocco</option>
+                            <option value="Nigeria">Nigeria</option>
+                            <option value="Pakistan">Pakistan</option>
+                            <option value="Philippines">Philippines</option>
+                            <option value="Russia">Russia</option>
+                            <option value="Saudi Arabia">Saudi Arabia</option>
+                            <option value="South Africa">South Africa</option>
+                            <option value="Spain">Spain</option>
+                            <option value="Syria">Syria</option>
+                            <option value="Thailand">Thailand</option>
+                            <option value="Turkey">Turkey</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group full-width">
+                        <label>Rating: <span id="ratingValue">0</span> - 10</label>
+                        <input type="range" id="ratingFilter" min="0" max="10" value="0" class="rating-slider">
+                    </div>
+                    
+                    <div class="filter-group full-width">
+                        <label>Language:</label>
+                        <div class="language-buttons">
+                            <button class="lang-btn active" data-lang="">All</button>
+                            <button class="lang-btn" data-lang="French dub">French dub</button>
+                            <button class="lang-btn" data-lang="Hindi dub">Hindi dub</button>
+                            <button class="lang-btn" data-lang="Bengali dub">Bengali dub</button>
+                            <button class="lang-btn" data-lang="Urdu dub">Urdu dub</button>
+                            <button class="lang-btn" data-lang="Punjabi dub">Punjabi dub</button>
+                            <button class="lang-btn" data-lang="Tamil dub">Tamil dub</button>
+                            <button class="lang-btn" data-lang="Telugu dub">Telugu dub</button>
+                            <button class="lang-btn" data-lang="Malayalam dub">Malayalam dub</button>
+                            <button class="lang-btn" data-lang="Kannada dub">Kannada dub</button>
+                            <button class="lang-btn" data-lang="Arabic dub">Arabic dub</button>
+                            <button class="lang-btn" data-lang="Tagalog dub">Tagalog dub</button>
+                            <button class="lang-btn" data-lang="Indonesian dub">Indonesian dub</button>
+                            <button class="lang-btn" data-lang="Russian dub">Russian dub</button>
+                            <button class="lang-btn" data-lang="Kurdish sub">Kurdish sub</button>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-actions">
+                        <button id="resetFilterBtn" class="reset-filter-btn">Reset</button>
+                        <button id="applyFilterBtn" class="apply-filter-btn">Confirm</button>
+                    </div>
+                </div>
+                
+                <div id="tvShowsGrid" class="results-grid"></div>
+                
+                <div class="pagination-controls">
+                    <button id="prevPageBtn" class="pagination-btn" disabled>← Previous</button>
+                    <span id="pageInfo" class="page-info">Page 1</span>
+                    <button id="nextPageBtn" class="pagination-btn">Next →</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Movies Browser Section -->
+        <section id="moviesPage" class="page-section hidden">
+            <button class="back-btn" onclick="showSearchPage()">← Back to Home</button>
+            
+            <div class="tv-shows-browser">
+                <h2 class="tv-shows-title">Browse Movies</h2>
+                
+                <div class="filter-controls">
+                    <div class="filter-group">
+                        <label>Sort by:</label>
+                        <div class="button-group">
+                            <button class="filter-btn movies-sort-btn" data-sort="ForYou">ForYou</button>
+                            <button class="filter-btn movies-sort-btn" data-sort="Hottest">Hottest</button>
+                            <button class="filter-btn movies-sort-btn active" data-sort="Latest">Latest</button>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Genre:</label>
+                        <select id="moviesGenreFilter" class="filter-dropdown">
+                            <option value="">All Genres</option>
+                            <option value="Action">Action</option>
+                            <option value="Adventure">Adventure</option>
+                            <option value="Comedy">Comedy</option>
+                            <option value="Crime">Crime</option>
+                            <option value="Drama">Drama</option>
+                            <option value="Fantasy">Fantasy</option>
+                            <option value="Horror">Horror</option>
+                            <option value="Romance">Romance</option>
+                            <option value="Sci-Fi">Sci-Fi</option>
+                            <option value="Thriller">Thriller</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Year:</label>
+                        <select id="moviesYearFilter" class="filter-dropdown">
+                            <option value="">All Years</option>
+                            <option value="2025">2025</option>
+                            <option value="2024">2024</option>
+                            <option value="2023">2023</option>
+                            <option value="2022">2022</option>
+                            <option value="2021">2021</option>
+                            <option value="2020">2020</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Country:</label>
+                        <select id="moviesCountryFilter" class="filter-dropdown">
+                            <option value="">All</option>
+                            <option value="United States">United States</option>
+                            <option value="United Kingdom">United Kingdom</option>
+                            <option value="Korea">Korea</option>
+                            <option value="Japan">Japan</option>
+                            <option value="Bangladesh">Bangladesh</option>
+                            <option value="China">China</option>
+                            <option value="Egypt">Egypt</option>
+                            <option value="France">France</option>
+                            <option value="Germany">Germany</option>
+                            <option value="India">India</option>
+                            <option value="Indonesia">Indonesia</option>
+                            <option value="Iraq">Iraq</option>
+                            <option value="Italy">Italy</option>
+                            <option value="Ivory Coast">Ivory Coast</option>
+                            <option value="Kenya">Kenya</option>
+                            <option value="Lebanon">Lebanon</option>
+                            <option value="Mexico">Mexico</option>
+                            <option value="Morocco">Morocco</option>
+                            <option value="Nigeria">Nigeria</option>
+                            <option value="Pakistan">Pakistan</option>
+                            <option value="Philippines">Philippines</option>
+                            <option value="Russia">Russia</option>
+                            <option value="Saudi Arabia">Saudi Arabia</option>
+                            <option value="South Africa">South Africa</option>
+                            <option value="Spain">Spain</option>
+                            <option value="Syria">Syria</option>
+                            <option value="Thailand">Thailand</option>
+                            <option value="Turkey">Turkey</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group full-width">
+                        <label>Rating: <span id="moviesRatingValue">0</span> - 10</label>
+                        <input type="range" id="moviesRatingFilter" min="0" max="10" value="0" class="rating-slider">
+                    </div>
+                    
+                    <div class="filter-group full-width">
+                        <label>Language:</label>
+                        <div class="language-buttons">
+                            <button class="lang-btn movies-lang-btn active" data-lang="">All</button>
+                            <button class="lang-btn movies-lang-btn" data-lang="French dub">French dub</button>
+                            <button class="lang-btn movies-lang-btn" data-lang="Hindi dub">Hindi dub</button>
+                            <button class="lang-btn movies-lang-btn" data-lang="Arabic dub">Arabic dub</button>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-actions">
+                        <button id="moviesResetBtn" class="reset-filter-btn">Reset</button>
+                        <button id="moviesApplyBtn" class="apply-filter-btn">Confirm</button>
+                    </div>
+                </div>
+                
+                <div id="moviesGrid" class="results-grid"></div>
+                
+                <div class="pagination-controls">
+                    <button id="moviesPrevBtn" class="pagination-btn" disabled>← Previous</button>
+                    <span id="moviesPageInfo" class="page-info">Page 1</span>
+                    <button id="moviesNextBtn" class="pagination-btn">Next →</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Animation Browser Section -->
+        <section id="animationPage" class="page-section hidden">
+            <button class="back-btn" onclick="showSearchPage()">← Back to Home</button>
+            
+            <div class="tv-shows-browser">
+                <h2 class="tv-shows-title">Browse Animation</h2>
+                
+                <div class="filter-controls">
+                    <div class="filter-group">
+                        <label>Year:</label>
+                        <select id="animationYearFilter" class="filter-dropdown">
+                            <option value="">All Years</option>
+                            <option value="2025">2025</option>
+                            <option value="2024">2024</option>
+                            <option value="2023">2023</option>
+                            <option value="2022">2022</option>
+                            <option value="2021">2021</option>
+                            <option value="2020">2020</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label>Country:</label>
+                        <select id="animationCountryFilter" class="filter-dropdown">
+                            <option value="">All</option>
+                            <option value="United States">United States</option>
+                            <option value="United Kingdom">United Kingdom</option>
+                            <option value="Korea">Korea</option>
+                            <option value="Japan">Japan</option>
+                            <option value="China">China</option>
+                            <option value="France">France</option>
+                            <option value="Germany">Germany</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-actions">
+                        <button id="animationResetBtn" class="reset-filter-btn">Reset</button>
+                        <button id="animationApplyBtn" class="apply-filter-btn">Confirm</button>
+                    </div>
+                </div>
+                
+                <div id="animationGrid" class="results-grid"></div>
+                
+                <div class="pagination-controls">
+                    <button id="animationPrevBtn" class="pagination-btn" disabled>← Previous</button>
+                    <span id="animationPageInfo" class="page-info">Page 1</span>
+                    <button id="animationNextBtn" class="pagination-btn">Next →</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Video Player Section -->
+        <section id="playerPage" class="page-section hidden">
+            <button class="back-btn" onclick="showDetailsPage()">← Back to Details</button>
+            
+            <div class="player-container-full">
+                <h2 id="playerTitle" class="player-title-text"></h2>
+                
+                <video id="videoPlayer" class="video-player-full" controls autoplay crossorigin="anonymous">
+                    Your browser does not support the video tag.
+                </video>
+                
+                <div class="player-controls-row">
+                    <div class="player-info-left">
+                        <span id="videoQualityDisplay"></span>
+                        <span id="videoDurationDisplay"></span>
+                    </div>
+                    
+                    <div class="player-controls-right">
+                        <div class="quality-selector-inline">
+                            <label for="qualitySelect">Quality:</label>
+                            <select id="qualitySelect" class="quality-dropdown">
+                                <option value="">Loading...</option>
+                            </select>
+                        </div>
+                        
+                        <div class="subtitle-controls-inline">
+                            <label for="subtitleSelect">Subtitles:</label>
+                            <select id="subtitleSelect" class="subtitle-dropdown">
+                                <option value="">Loading...</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Loading Spinner -->
+        <div id="loadingSpinner" class="loading-spinner hidden">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    
+    <!-- Social Bar -->
+    <script type='text/javascript' src='//pl28143111.effectivegatecpm.com/28/2d/f3/282df3a47051c90f5a89bb52da4976ea.js'></script>
+</body>
+</html>

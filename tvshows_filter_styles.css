@@ -1,0 +1,142 @@
+
+/* Additional TV Shows Filter Styles */
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 200px;
+}
+
+.filter-group.full-width {
+    width: 100%;
+}
+
+.filter-group label {
+    color: var(--text);
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.button-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.filter-btn {
+    padding: 0.75rem 1.25rem;
+    background: var(--bg-card);
+    border: 2px solid rgba(99, 102, 241, 0.3);
+    border-radius: 10px;
+    color: var(--text);
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+    border-color: var(--primary);
+}
+
+.filter-btn.active {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    border-color: var(--primary);
+    color: var(--text);
+}
+
+.rating-slider {
+    width: 100%;
+    height: 8px;
+    border-radius: 5px;
+    background: var(--bg-card);
+    outline: none;
+    opacity: 0.9;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
+}
+
+.rating-slider:hover {
+    opacity: 1;
+}
+
+.rating-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    cursor: pointer;
+}
+
+.rating-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    cursor: pointer;
+    border: none;
+}
+
+.language-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.lang-btn {
+    padding: 0.6rem 1rem;
+    background: var(--bg-card);
+    border: 2px solid rgba(99, 102, 241, 0.3);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.lang-btn:hover {
+    border-color: var(--primary);
+    background: rgba(99, 102, 241, 0.1);
+}
+
+.lang-btn.active {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+    border-color: var(--primary);
+    color: var(--text);
+}
+
+.filter-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.reset-filter-btn {
+    padding: 0.75rem 2rem;
+    background: var(--bg-card);
+    border: 2px solid rgba(99, 102, 241, 0.3);
+    border-radius: 10px;
+    color: var(--text);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.reset-filter-btn:hover {
+    border-color: var(--primary);
+    background: rgba(99, 102, 241, 0.1);
+}
+
+/* Update filter-controls to be a grid */
+.filter-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    background: var(--bg-card);
+    padding: 2rem;
+    border-radius: 12px;
+}

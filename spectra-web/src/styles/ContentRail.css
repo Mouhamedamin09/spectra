@@ -1,0 +1,115 @@
+.content-rail {
+  margin-bottom: var(--spacing-xxl);
+  padding: 0 var(--spacing-l);
+  position: relative;
+  width: 100%;
+  overflow: visible;
+}
+
+.content-rails > .content-rail:first-child {
+  padding-top: 0;
+  margin-top: 0;
+}
+
+.content-rail__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-m);
+}
+
+.content-rail__title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text-white);
+  margin: 0;
+}
+
+.content-rail__controls {
+  display: flex;
+  gap: var(--spacing-s);
+}
+
+.rail-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--color-text-white);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.rail-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--color-text-white);
+}
+
+.content-rail__container {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+  margin: 0 calc(var(--spacing-l) * -1); /* Negative margin to allow full bleed scroll */
+  padding: var(--spacing-xs) var(--spacing-l); /* Top padding to prevent clipping, side padding to align content */
+  scroll-behavior: smooth;
+  cursor: grab;
+  width: 100%;
+  position: relative;
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+.content-rail__container:active {
+  cursor: grabbing;
+}
+
+.content-rail__container::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+.content-rail__track {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--spacing-m);
+  padding-bottom: var(--spacing-m); /* Space for hover effects */
+  min-width: min-content; /* Ensure track is wide enough for all items */
+  width: max-content; /* Make track as wide as its content */
+}
+
+.content-rail__item {
+  flex: 0 0 auto;
+  width: 200px;
+  min-width: 200px; /* Ensure items don't shrink */
+}
+
+/* Touch scrolling for mobile */
+@media (hover: none) and (pointer: coarse) {
+  .content-rail__container {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 768px) {
+  .content-rail__item {
+    width: 140px;
+    min-width: 140px;
+  }
+  
+  .content-rail__controls {
+    display: none;
+  }
+  
+  .content-rail {
+    padding: 0 var(--spacing-m);
+    margin-bottom: var(--spacing-xl);
+  }
+  
+  .content-rail__container {
+    margin: 0 calc(var(--spacing-m) * -1);
+    padding: 0 var(--spacing-m);
+  }
+}

@@ -1,0 +1,43 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: var(--radius-s);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+}
+
+.badge--default {
+  background-color: rgba(255, 255, 255, 0.15);
+  color: var(--color-text-white);
+  backdrop-filter: blur(4px);
+}
+
+.badge--success {
+  background-color: var(--color-spectra-green);
+  color: var(--color-text-white);
+}
+
+.badge--warning {
+  background-color: var(--color-gold);
+  color: var(--color-void-black);
+}
+
+.badge--danger {
+  background-color: var(--color-error-red);
+  color: var(--color-text-white);
+}
+
+.badge--info {
+  background-color: var(--color-neon-teal);
+  color: var(--color-void-black);
+}
+
+.badge--premium {
+  background: linear-gradient(135deg, var(--color-gold), #f59e0b);
+  color: var(--color-void-black);
+  box-shadow: 0 2px 4px rgba(251, 191, 36, 0.2);
+}
