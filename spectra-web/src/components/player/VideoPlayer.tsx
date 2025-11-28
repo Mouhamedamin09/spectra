@@ -9,6 +9,7 @@ import {
   SkipBack,
   SkipForward,
   ArrowLeft,
+  Smartphone,
 } from "lucide-react";
 import {
   useNavigate,
@@ -100,6 +101,16 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
   useEffect(() => {
     const lockOrientation = async () => {
       try {
+        // Must be in fullscreen to lock orientation on most devices
+        if (containerRef.current && !document.fullscreenElement) {
+            try {
+                await containerRef.current.requestFullscreen();
+            } catch (e) {
+                // Fullscreen might be blocked without user interaction
+                console.log('Auto-fullscreen failed:', e);
+            }
+        }
+
         if (screen.orientation && 'lock' in screen.orientation) {
           // @ts-ignore - lock is not in standard TS types yet
           await screen.orientation.lock('landscape');
@@ -741,6 +752,25 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
               <button className="video-btn" onClick={toggleFullscreen}>
                 {isFullscreen ? <Minimize size={24} /> : <Maximize size={24} />}
+              </button>
+
+              <button 
+                className="video-btn md:hidden" 
+                onClick={async () => {
+                  try {
+                    if (!document.fullscreenElement && containerRef.current) {
+                      await containerRef.current.requestFullscreen();
+                    }
+                    if (screen.orientation && 'lock' in screen.orientation) {
+                      // @ts-ignore
+                      await screen.orientation.lock('landscape');
+                    }
+                  } catch (e) {
+                    console.log('Rotation failed:', e);
+                  }
+                }}
+              >
+                <Smartphone size={24} />
               </button>
             </div>
           </div>
