@@ -37,9 +37,15 @@ def search_movies(query):
         try:
             response = session.get(api_url, headers=headers, timeout=10)
             response.raise_for_status()
-            data = response.json()
-            return data
+            try:
+                data = response.json()
+                return data
+            except json.JSONDecodeError:
+                print(f"[-] JSON Decode Error. Response content: {response.text[:500]}")
+                return []
         except requests.exceptions.HTTPError as e:
+            print(f"[-] HTTP Error: {e}")
+            print(f"[-] Response content: {e.response.text[:500]}")
             if e.response.status_code == 404:
                 # API endpoint might be different, try alternative
                 print(f"[!] Search API not found at {api_url}, trying alternative...")

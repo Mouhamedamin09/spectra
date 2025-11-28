@@ -18,6 +18,22 @@ from cache_utils import cache_response, get_cache
 app = Flask(__name__, static_folder='.')
 CORS(app)  # Enable CORS for all routes
 
+# ===== FORCE PROXY INITIALIZATION AT STARTUP =====
+print("=" * 80)
+print("🚀 INITIALIZING SESSION MANAGER AT STARTUP")
+print("=" * 80)
+from session_manager import get_session_manager
+_startup_session = get_session_manager()
+if hasattr(_startup_session, 'proxy_list'):
+    print(f"✅ Loaded {len(_startup_session.proxy_list)} proxies at startup")
+    if _startup_session.proxy_list:
+        print(f"✅ First proxy: {_startup_session.proxy_list[0][:60]}")
+    else:
+        print("❌ ERROR: Proxy list is EMPTY!")
+else:
+    print("❌ ERROR: SessionManager has no proxy_list attribute!")
+print("=" * 80)
+
 
 @app.route('/')
 def index():
@@ -161,7 +177,7 @@ def stream(slug, subject_id):
         api_url = f"https://lok-lok.cc/wefeed-h5-bff/web/subject/play?subjectId={subject_id}&se={season}&ep={episode}&detail_path={slug}"
         
         headers = {
-            'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Accept': 'application/json',
             'Referer': f'https://lok-lok.cc/spa/videoPlayPage/movies/{slug}?id={subject_id}&type=/movie/detail&lang=en',
             'x-client-info': '{"timezone":"Africa/Tunis"}'
@@ -349,7 +365,7 @@ def get_tv_details(subject_id, slug):
         api_url = f'https://lok-lok.cc/wefeed-h5-bff/web/subject/detail?subjectId={subject_id}&detail_path={slug}'
         
         headers = {
-            'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Accept': 'application/json',
             'Referer': f'https://lok-lok.cc/spa/videoPlayPage/movies/{slug}?id={subject_id}&type=/movie/detail&lang=en',
             'x-client-info': '{"timezone":"Africa/Tunis"}'
@@ -426,7 +442,7 @@ def search_suggest():
         api_url = 'https://moviebox.ph/wefeed-h5-bff/web/subject/search-suggest'
         
         headers = {
-            'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Accept': 'application/json',
             'Content-Type': 'application/json',
             'Origin': 'https://moviebox.ph',
@@ -513,7 +529,7 @@ def get_collection(collection_id):
         api_url = 'https://moviebox.ph/wefeed-h5-bff/web/ranking-list/content'
         
         headers = {
-            'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Accept': 'application/json',
             'Referer': f'https://moviebox.ph/ranking-list/Kfiq8uLrEM2?id={collection_id}&page_from=more_SUBJECTS_MOVIE',
             'x-client-info': '{"timezone":"Africa/Tunis"}'
@@ -793,7 +809,7 @@ def proxy_stream():
         
         # Stream the video
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Referer': 'https://lok-lok.cc/',
             'Range': request.headers.get('Range', 'bytes=0-')
         }
@@ -801,8 +817,8 @@ def proxy_stream():
         response = session.get(video_url, headers=headers, stream=True)
         
         def generate():
-            # Use larger chunks for better performance (512KB instead of 8KB)
-            for chunk in response.iter_content(chunk_size=524288):
+            # Use larger chunks for better performance (1MB)
+            for chunk in response.iter_content(chunk_size=1024*1024):
                 if chunk:
                     yield chunk
         
@@ -983,7 +999,7 @@ def browse_animation():
         api_url = 'https://moviebox.ph/wefeed-h5-bff/web/filter'
         
         headers = {
-            'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Accept': 'application/json',
             'Content-Type': 'application/json',
             'Referer': 'https://moviebox.ph/',
@@ -1037,8 +1053,9 @@ def track_analytics():
         
         analytics_db = get_analytics_db()
         if not analytics_db or analytics_db.db is None:
-            print("[ANALYTICS] ERROR: Analytics DB not connected!")
-            return jsonify({'success': False, 'message': 'Database not connected'}), 500
+            print("[ANALYTICS] WARNING: Analytics DB not connected! Skipping track.")
+            # Return success anyway to avoid breaking the frontend
+            return jsonify({'success': True, 'message': 'Event tracked (mock)'})
         
         success = analytics_db.track_watch_event(user_id, content_id, content_title, content_type)
         
