@@ -1,5 +1,5 @@
 """
-Session Manager for MovieBox Scraping
+Session Manager for MovieBox Scraping with Proxy Rotation
 Automatically obtains and manages cookies for lok-lok.cc
 """
 
@@ -7,13 +7,40 @@ import requests
 from datetime import datetime, timedelta
 import uuid
 import time
+import os
+import random
 
 
 class SessionManager:
-    """Manages cookies and session for movie streaming API"""
+    """Manages cookies and session for movie streaming API with proxy rotation"""
     
     def __init__(self):
         self.session = requests.Session()
+        
+        # Load proxy list from file
+        self.proxy_list = self._load_proxies()
+        self.current_proxy_index = 0
+        
+        # Configure initial proxy
+        if self.proxy_list:
+            proxy = self._get_next_proxy()
+            print(f"[+] Using proxy: {proxy[:50]}...")
+            self.session.proxies = {
+                'http': proxy,
+                'https': proxy
+            }
+        else:
+            # Fallback to single proxy from environment variable
+            proxy_url = os.getenv('STREAMING_PROXY_URL')
+            if proxy_url:
+                print(f"[+] Using proxy from env: {proxy_url[:50]}...")
+                self.session.proxies = {
+                    'http': proxy_url,
+                    'https': proxy_url
+                }
+            else:
+                print("[!] WARNING: No proxy configured. Requests will likely be blocked!")
+        
         self.session.headers.update({
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
             'Accept': 'application/json, text/plain, */*',
@@ -31,6 +58,44 @@ class SessionManager:
         })
         self.cookies_obtained_at = None
         self.cookie_lifetime = timedelta(hours=2)  # Refresh every 2 hours
+    
+    def _load_proxies(self):
+        """Load proxies from file"""
+        try:
+            proxy_file = os.path.join(os.path.dirname(__file__), 'proxy_list.txt')
+            if os.path.exists(proxy_file):
+                with open(proxy_file, 'r') as f:
+                    proxies = [line.strip() for line in f if line.strip() and line.strip().startswith('http')]
+                print(f"[+] Loaded {len(proxies)} proxies from file")
+                return proxies
+            else:
+                print(f"[!] Proxy file not found: {proxy_file}")
+        except Exception as e:
+            print(f"[-] Error loading proxies: {e}")
+        return []
+    
+    def _get_next_proxy(self):
+        """Get the next proxy from the list (round-robin)"""
+        if not self.proxy_list:
+            return None
+        
+        proxy = self.proxy_list[self.current_proxy_index]
+        self.current_proxy_index = (self.current_proxy_index + 1) % len(self.proxy_list)
+        return proxy
+    
+    def rotate_proxy(self):
+        """Switch to a different proxy"""
+        if self.proxy_list:
+            proxy = self._get_next_proxy()
+            print(f"[*] Rotating to proxy: {proxy[:50]}...")
+            self.session.proxies = {
+                'http': proxy,
+                'https': proxy
+            }
+            # Also refresh cookies when rotating proxy
+            self.get_fresh_cookies()
+            return True
+        return False
         
     def get_fresh_cookies(self):
         """
@@ -119,7 +184,7 @@ def get_session_manager():
 
 if __name__ == "__main__":
     # Test the session manager
-    print("Testing SessionManager...")
+    print("Testing SessionManager with Proxy Rotation...")
     print("=" * 60)
     
     manager = SessionManager()
@@ -130,5 +195,13 @@ if __name__ == "__main__":
         print(f"\nCookies:")
         for name, value in manager.get_cookies_dict().items():
             print(f"  {name}: {value}")
+        
+        # Test proxy rotation
+        if manager.proxy_list:
+            print(f"\n✓ {len(manager.proxy_list)} proxies loaded")
+            print("\nTesting proxy rotation...")
+            for i in range(3):
+                manager.rotate_proxy()
+                time.sleep(1)
     else:
         print("\n✗ Failed to establish session")
