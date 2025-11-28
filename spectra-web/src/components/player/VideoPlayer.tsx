@@ -96,6 +96,32 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     }
   };
 
+  // Force landscape on mount
+  useEffect(() => {
+    const lockOrientation = async () => {
+      try {
+        if (screen.orientation && 'lock' in screen.orientation) {
+          // @ts-ignore - lock is not in standard TS types yet
+          await screen.orientation.lock('landscape');
+        }
+      } catch (e) {
+        console.log('Orientation lock failed:', e);
+      }
+    };
+
+    lockOrientation();
+
+    return () => {
+      try {
+        if (screen.orientation && 'unlock' in screen.orientation) {
+          screen.orientation.unlock();
+        }
+      } catch (e) {
+        console.log('Orientation unlock failed:', e);
+      }
+    };
+  }, []);
+
   // Update baseTitle when item changes
   useEffect(() => {
     const itemTitle =

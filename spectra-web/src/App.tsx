@@ -8,12 +8,14 @@ import { MyListPage } from './pages/MyListPage';
 import { VideoPlayer } from './components/player/VideoPlayer';
 import { useAdBlockDetector } from './hooks/useAdBlockDetector';
 import { AdBlockModal } from './components/common/AdBlockModal';
+import { ScrollToTop } from './components/common/ScrollToTop';
 
 function App() {
   const isAdBlockDetected = useAdBlockDetector();
 
   return (
     <Router>
+      <ScrollToTop />
       {isAdBlockDetected && <AdBlockModal />}
       <Routes>
         <Route element={<MainLayout />}>
