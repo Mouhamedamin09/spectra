@@ -249,12 +249,12 @@ export const api = {
     const isAnimation = subjectType === 3 || subjectType === '3';
     const dubInfo = extractDubLanguage(data as ApiSubject);
     
-    const result = {
+    const result: MediaItem = {
       id: data.subjectId,
       subjectId: data.subjectId,
       title: data.title,
       image: data.image,
-      type: isTv ? 'tv' : isAnimation ? 'animation' : 'movie',
+      type: (isTv ? 'tv' : isAnimation ? 'animation' : 'movie') as MediaItem['type'],
       slug: data.slug,
       description: data.description,
       subjectType: subjectType,
