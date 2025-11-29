@@ -316,6 +316,16 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
 
     window.addEventListener("keydown", handleKeyDown);
 
+    // Ensure timeout is set if playing and controls are visible
+    if (isPlaying && showControls) {
+      if (controlsTimeoutRef.current) {
+        window.clearTimeout(controlsTimeoutRef.current);
+      }
+      controlsTimeoutRef.current = window.setTimeout(() => {
+        setShowControls(false);
+      }, 3000);
+    }
+
     return () => {
       if (container) {
         container.removeEventListener("mousemove", handleMouseMove);
@@ -326,17 +336,13 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
         window.clearTimeout(controlsTimeoutRef.current);
       }
     };
-  }, [isPlaying]);
+  }, [isPlaying, showControls]);
 
   const togglePlay = () => {
     if (videoRef.current) {
       if (isPlaying) {
         videoRef.current.pause();
-        // Show controls when paused
         setShowControls(true);
-        if (controlsTimeoutRef.current) {
-          window.clearTimeout(controlsTimeoutRef.current);
-        }
       } else {
         videoRef.current.play();
         
@@ -350,14 +356,7 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
           );
         }
         
-        // Show controls briefly, then hide after 3 seconds
         setShowControls(true);
-        if (controlsTimeoutRef.current) {
-          window.clearTimeout(controlsTimeoutRef.current);
-        }
-        controlsTimeoutRef.current = window.setTimeout(() => {
-          setShowControls(false);
-        }, 3000);
       }
       setIsPlaying(!isPlaying);
     }

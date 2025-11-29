@@ -145,7 +145,7 @@ export const DetailsPage: React.FC = () => {
                             })));
                         }
                     })
-                    .catch(e => console.log('No recommendations available for TV show'))
+                    .catch(() => console.log('No recommendations available for TV show'))
             );
             
             // Wait for all parallel requests
