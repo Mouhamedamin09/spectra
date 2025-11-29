@@ -109,70 +109,84 @@ export const DetailsPage: React.FC = () => {
           }
         }
 
-        // 3. Load Full Details
+        // 3. Load Full Details (OPTIMIZED: Parallel requests for TV shows)
         if (isTV) {
-            // Already loaded in check above, or load now
+            // Load TV details and recommendations in PARALLEL
+            const promises = [];
+            
+            // Load TV data if not already loaded
             if (!details) {
-                const tvData = await api.getDetails(subjectId, 'tv', slug);
-                setDetails(tvData);
-                // Update item type to ensure it's marked as TV
-                setItem((prev: MediaItem | null) => prev ? { ...prev, type: 'tv', subjectType: 2 } : null);
-                if (tvData.seasons?.length > 0) {
-                    setSelectedSeason(tvData.seasons[0].se);
-                }
+                promises.push(
+                    api.getDetails(subjectId, 'tv', slug).then(tvData => {
+                        setDetails(tvData);
+                        setItem((prev: MediaItem | null) => prev ? { ...prev, type: 'tv', subjectType: 2 } : null);
+                        if (tvData.seasons?.length > 0) {
+                            setSelectedSeason(tvData.seasons[0].se);
+                        }
+                        return tvData;
+                    })
+                );
             }
             
-            // Load Recommendations for TV shows
-            try {
-                const movieData = await api.getDetails(subjectId, 'movie', slug);
-                if (movieData.recommendations) {
-                    setRecommendations(movieData.recommendations.map((rec: any) => ({
+            // Load recommendations in parallel
+            promises.push(
+                api.getDetails(subjectId, 'movie', slug)
+                    .then(movieData => {
+                        if (movieData.recommendations) {
+                            setRecommendations(movieData.recommendations.map((rec: any) => ({
+                                id: rec.subjectId,
+                                title: rec.title,
+                                image: rec.image,
+                                year: rec.year,
+                                rating: rec.rating,
+                                type: rec.subjectType === 2 || rec.subjectType === '2' ? 'tv' : 'movie',
+                                slug: rec.slug,
+                                subjectType: rec.subjectType
+                            })));
+                        }
+                    })
+                    .catch(e => console.log('No recommendations available for TV show'))
+            );
+            
+            // Wait for all parallel requests
+            await Promise.allSettled(promises);
+            
+        } else {
+            // Ensure item is marked as movie
+            setItem((prev: MediaItem | null) => prev ? { ...prev, type: 'movie', subjectType: 1 } : null);
+            
+            // Load Movie Details and streams in PARALLEL
+            const [movieData, streamsData] = await Promise.allSettled([
+                api.getDetails(subjectId, 'movie', slug),
+                api.getStreams(slug, subjectId).catch(() => null)
+            ]);
+            
+            // Process movie details
+            if (movieData.status === 'fulfilled') {
+                setDetails(movieData.value);
+                
+                // Load Recommendations
+                if (movieData.value.recommendations) {
+                    setRecommendations(movieData.value.recommendations.map((rec: any) => ({
                         id: rec.subjectId,
                         title: rec.title,
                         image: rec.image,
                         year: rec.year,
                         rating: rec.rating,
-                        type: rec.subjectType === 2 || rec.subjectType === '2' ? 'tv' : 'movie',
-                        slug: rec.slug,
-                        subjectType: rec.subjectType
+                        type: 'movie',
+                        slug: rec.slug
                     })));
                 }
-            } catch (e) {
-                console.log('No recommendations available for TV show');
             }
-        } else {
-            // Ensure item is marked as movie
-            setItem((prev: MediaItem | null) => prev ? { ...prev, type: 'movie', subjectType: 1 } : null);
-            // Load Movie Details
-            const movieData = await api.getDetails(subjectId, 'movie', slug);
-            setDetails(movieData);
             
-            // Load Recommendations
-            if (movieData.recommendations) {
-                setRecommendations(movieData.recommendations.map((rec: any) => ({
-                    id: rec.subjectId,
-                    title: rec.title,
-                    image: rec.image,
-                    year: rec.year,
-                    rating: rec.rating,
-                    type: 'movie',
-                    slug: rec.slug
-                })));
-            }
-
-            // Check for streams to get duration/quality
-            try {
-                const streams = await api.getStreams(slug, subjectId);
-                if (streams.streams?.length > 0) {
-                    const best = streams.streams[0];
-                    setDetails((prev: any) => ({
-                        ...prev,
-                        duration: Math.floor(best.duration_seconds / 60) + ' min',
-                        quality: best.quality
-                    }));
-                }
-            } catch (e) {
-                console.log('No streams available yet');
+            // Process streams data
+            if (streamsData.status === 'fulfilled' && streamsData.value?.streams?.length > 0) {
+                const best = streamsData.value.streams[0];
+                setDetails((prev: any) => ({
+                    ...prev,
+                    duration: Math.floor(best.duration_seconds / 60) + ' min',
+                    quality: best.quality
+                }));
             }
         }
 
