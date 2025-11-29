@@ -47,7 +47,7 @@ jobs:
             sleep 3
             
             # Check service status
-            if sudo systemctl is-active --quiet spectramovie; then
+            if sudo systemctl is-active spectramovie >/dev/null; then
               echo "✅ Deployment successful! Service is running."
             else
               echo "❌ Deployment failed! Service is not running."
