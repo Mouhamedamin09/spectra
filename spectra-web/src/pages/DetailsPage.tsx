@@ -57,6 +57,10 @@ export const DetailsPage: React.FC = () => {
         // Verify the item from state matches the current slug
         if (currentItem && currentItem.slug === slug) {
           subjectId = currentItem.id || currentItem.subjectId;
+          // If we have a complete item with ID, skip metadata call entirely
+          if (subjectId) {
+            setItem(currentItem);
+          }
         }
 
         // 1. Get Subject ID if missing or doesn't match
@@ -77,9 +81,6 @@ export const DetailsPage: React.FC = () => {
              currentItem = { id: subjectId, title: 'Loading...', image: '', type: 'movie', slug };
              setItem(currentItem);
           }
-        } else {
-          // Use the item from state if it matches
-          setItem(currentItem);
         }
 
         if (!subjectId) throw new Error('Could not resolve content ID');

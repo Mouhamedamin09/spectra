@@ -332,6 +332,11 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
     if (videoRef.current) {
       if (isPlaying) {
         videoRef.current.pause();
+        // Show controls when paused
+        setShowControls(true);
+        if (controlsTimeoutRef.current) {
+          window.clearTimeout(controlsTimeoutRef.current);
+        }
       } else {
         videoRef.current.play();
         
@@ -344,6 +349,15 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({
             item.type || 'movie'
           );
         }
+        
+        // Show controls briefly, then hide after 3 seconds
+        setShowControls(true);
+        if (controlsTimeoutRef.current) {
+          window.clearTimeout(controlsTimeoutRef.current);
+        }
+        controlsTimeoutRef.current = window.setTimeout(() => {
+          setShowControls(false);
+        }, 3000);
       }
       setIsPlaying(!isPlaying);
     }

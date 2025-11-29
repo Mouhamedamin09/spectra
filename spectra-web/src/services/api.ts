@@ -130,6 +130,7 @@ const cache = {
         localStorage.removeItem(key);
         return null;
       }
+      console.log(`[Cache HIT] ${key}`);
       return value;
     } catch (e) {
       return null;
@@ -142,11 +143,13 @@ const cache = {
         expiry: Date.now() + ttlSeconds * 1000,
       };
       localStorage.setItem(key, JSON.stringify(item));
+      console.log(`[Cache SET] ${key} (TTL: ${ttlSeconds}s)`);
     } catch (e) {
       console.warn('Failed to save to cache', e);
     }
   }
 };
+
 
 export const api = {
   // Helper
