@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Play, Info } from 'lucide-react';
 import type { MediaItem } from '../../types';
 import { Badge } from '../common/Badge';
+import { adControlService } from '../../services/adControlService';
 import '../../styles/MovieCard.css';
 
 interface MovieCardProps {
@@ -18,6 +19,11 @@ export const MovieCard: React.FC<MovieCardProps> = ({ item }) => {
     if (target.closest('.movie-card__action')) {
       return;
     }
+    
+    // Check if ad should be shown (but don't actually show popup)
+    // This just tracks the click count
+    adControlService.shouldShowAd();
+    
     // Navigate to details page
     navigate(`/details/${item.slug}`, { state: { item } });
   };
